@@ -21,6 +21,7 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   memories  Memory[]
+  captureJobs CaptureJob[]
 }
 
 model Memory {
@@ -37,6 +38,7 @@ model Memory {
   user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags         MemoryTag[]
   assets       Asset[]
+  captureJobs  CaptureJob[]
 
   @@index([userId, contentType, capturedAt], map: "memories_lookup_idx")
 }
@@ -75,6 +77,23 @@ model MemoryTag {
   @@index([tagId], map: "memory_tags_tag_idx")
 }
 
+model CaptureJob {
+  id        String            @id @default(uuid()) @db.Uuid
+  userId    String            @db.Uuid
+  memoryId  String?           @db.Uuid
+  payload   Json
+  attempts  Int               @default(0)
+  status    CaptureJobStatus  @default(PENDING)
+  error     String?
+  nextRun   DateTime          @default(now())
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memory    Memory?           @relation(fields: [memoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status, nextRun], map: "capture_job_lookup_idx")
+}
+
 enum MemoryContentType {
   ARTICLE
   PRODUCT
@@ -95,4 +114,11 @@ enum AssetType {
   TEXT
   EMBED
   OTHER
+}
+
+enum CaptureJobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
 }

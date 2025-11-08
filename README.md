@@ -39,13 +39,29 @@ npm run db:push
 npm run prisma:generate
 ```
 
-4. Start the dev server
+4. Start the dev server on port 5000 (the extension expects this)
 
 ```bash
-npm run dev
+npm run dev -- --port 5000
 ```
 
-Open http://localhost:3000 and you should see the Synapse workspace shell UI.
+Open http://localhost:5000 to view Synapse.
+
+## Browser Extension (Save to Synapse)
+
+The `extension/` folder contains a manifest V3 Chrome extension that turns any highlight into a Synapse memory.
+
+### Install locally
+
+1. Build/start the app on port 5000 (see above) and ensure you are signed in once.
+2. In Chrome, open `chrome://extensions`, enable **Developer mode**, click **Load unpacked**, and select the `extension/` directory.
+3. Optional: Pin the extension for quick access. The content script runs automatically on every page.
+
+### Usage
+
+- Highlight any text on the web; a floating “Save to Synapse” button will appear near your cursor.
+- Click the button to send `{ selectedText, pageTitle, pageURL, timestamp }` to `http://localhost:5000/api/save`.
+- A toast confirms “Saved to Synapse ✅”. Refresh your Synapse dashboard to see the memory in “Recent memories”.
 
 ## Supabase Notes
 
@@ -72,6 +88,6 @@ npm run db:studio        # inspect data
 
 ## Next Steps
 
-- Implement capture APIs for URLs, highlights, and file uploads.
-- Add background jobs for enrichment (scraping, OCR, summarization).
-- Wire UI surfaces for the visual memory board and semantic search (see `src/lib/vector-store.ts`).
+- Connect additional enrichment (summaries, embeddings) in the `/api/save` pipeline.
+- Add background jobs for heavy scraping or OCR.
+- Wire semantic search against Qdrant using `src/lib/vector-store.ts`.

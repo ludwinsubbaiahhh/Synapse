@@ -44,12 +44,6 @@ export function AppHeader() {
             Memories
           </Link>
           <Link
-            href="/capture"
-            className="rounded-full px-3 py-1.5 transition hover:bg-slate-900/5 hover:text-slate-900"
-          >
-            Capture
-          </Link>
-          <Link
             href="/search"
             className="rounded-full px-3 py-1.5 transition hover:bg-slate-900/5 hover:text-slate-900"
           >
