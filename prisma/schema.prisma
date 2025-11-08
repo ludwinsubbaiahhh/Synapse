@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid()) @db.Uuid
+  email     String    @unique
+  name      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  memories  Memory[]
+}
+
+model Memory {
+  id           String            @id @default(uuid()) @db.Uuid
+  userId       String            @db.Uuid
+  title        String?
+  summary      String?
+  contentType  MemoryContentType @default(LINK)
+  sourceUrl    String?
+  rawContent   Json?
+  capturedAt   DateTime          @default(now())
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags         MemoryTag[]
+  assets       Asset[]
+
+  @@index([userId, contentType, capturedAt], map: "memories_lookup_idx")
+}
+
+model Asset {
+  id          String    @id @default(uuid()) @db.Uuid
+  memoryId    String    @db.Uuid
+  type        AssetType @default(FILE)
+  url         String?
+  textContent String?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  memory      Memory    @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+
+  @@index([memoryId], map: "assets_memory_idx")
+}
+
+model Tag {
+  id        String      @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String      @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  memories  MemoryTag[]
+}
+
+model MemoryTag {
+  memoryId   String   @db.Uuid
+  tagId      String   @db.Uuid
+  assignedAt DateTime @default(now())
+  memory     Memory   @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([memoryId, tagId])
+  @@index([tagId], map: "memory_tags_tag_idx")
+}
+
+enum MemoryContentType {
+  ARTICLE
+  PRODUCT
+  VIDEO
+  IMAGE
+  NOTE
+  TODO
+  LINK
+  DOCUMENT
+  OTHER
+}
+
+enum AssetType {
+  FILE
+  IMAGE
+  AUDIO
+  VIDEO
+  TEXT
+  EMBED
+  OTHER
+}
