@@ -6,9 +6,9 @@ import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type SearchPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     q?: string;
-  };
+  }>;
 };
 
 export const metadata: Metadata = {
@@ -47,7 +47,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     );
   }
 
-  const query = searchParams?.q?.trim() ?? "";
+  const params = searchParams ? await searchParams : undefined;
+  const query = params?.q?.trim() ?? "";
 
   const memories = await prisma.memory.findMany({
     where: {

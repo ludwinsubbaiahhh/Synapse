@@ -13,6 +13,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@langchain/community": "^1.0.0",
     "@langchain/openai": "^1.0.0",
     "@prisma/client": "^6.19.0",
     "@qdrant/js-client-rest": "^1.15.1",
