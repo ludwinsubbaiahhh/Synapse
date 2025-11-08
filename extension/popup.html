@@ -45,7 +45,7 @@
     </p>
     <p>
       API endpoint:
-      <code>http://localhost:5000/api/save</code>
+      <code id="api-endpoint-display">http://localhost:3000/api/save</code>
     </p>
     <p>
       Need help?
@@ -57,6 +57,30 @@
         View setup guide
       </a>
     </p>
+    <script type="module">
+      const DEFAULT_ENDPOINT = "http://localhost:3000/api/save";
+
+      function updateDisplay(value) {
+        const display = document.getElementById("api-endpoint-display");
+        if (display) {
+          display.textContent = value || DEFAULT_ENDPOINT;
+        }
+      }
+
+      try {
+        chrome.storage.sync.get(["synapseApiEndpoint"], ({ synapseApiEndpoint }) => {
+          updateDisplay(
+            typeof synapseApiEndpoint === "string" &&
+              synapseApiEndpoint.trim().length > 0
+              ? synapseApiEndpoint.trim()
+              : DEFAULT_ENDPOINT,
+          );
+        });
+      } catch (error) {
+        console.warn("[Synapse] Unable to read stored endpoint", error);
+        updateDisplay(DEFAULT_ENDPOINT);
+      }
+    </script>
   </body>
 </html>
 

@@ -1,4 +1,18 @@
-const API_ENDPOINT = "http://localhost:5000/api/save";
+const DEFAULT_API_ENDPOINT = "http://localhost:3000/api/save";
+
+async function resolveApiEndpoint() {
+  try {
+    const result = await chrome.storage.sync.get(["synapseApiEndpoint"]);
+    const stored = result?.synapseApiEndpoint;
+    if (typeof stored === "string" && stored.trim().length > 0) {
+      return stored.trim();
+    }
+  } catch (error) {
+    console.warn("[Synapse] Failed to read stored API endpoint", error);
+  }
+
+  return DEFAULT_API_ENDPOINT;
+}
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type !== "SYNAPSE_CAPTURE") {
@@ -7,7 +21,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
   (async () => {
     try {
-      const response = await fetch(API_ENDPOINT, {
+      const endpoint = await resolveApiEndpoint();
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -26,7 +41,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       sendResponse({ ok: true, data });
     } catch (error) {
       console.error("[Synapse] Failed to save capture", error);
-      sendResponse({ ok: false, error: error instanceof Error ? error.message : String(error) });
+      sendResponse({
+        ok: false,
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   })();
 

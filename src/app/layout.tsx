@@ -5,7 +5,7 @@ import localFont from "next/font/local";
 
 import "./globals.css";
 
-import { AppHeader } from "@/components/navigation/app-header";
+import { AppHeaderWrapper } from "@/components/navigation/app-header-wrapper";
 import { SupabaseProvider } from "@/components/providers/supabase-provider";
 import { getClientEnv } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -49,7 +49,7 @@ export default async function RootLayout({
           supabaseUrl={NEXT_PUBLIC_SUPABASE_URL}
           supabaseAnonKey={NEXT_PUBLIC_SUPABASE_ANON_KEY}
         >
-          <AppHeader />
+          <AppHeaderWrapper />
           {children}
         </SupabaseProvider>
       </body>

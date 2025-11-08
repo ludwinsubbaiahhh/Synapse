@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 import { useSupabase } from "@/components/providers/supabase-provider";
 import { cn } from "@/lib/utils";
 
 export function AppHeader() {
-  const router = useRouter();
   const { supabase, session } = useSupabase();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -19,12 +17,12 @@ export function AppHeader() {
       if (error) {
         console.error("[Auth] sign out error", error);
       } else {
-        router.refresh();
+        window.location.reload();
       }
     } finally {
       setIsSigningOut(false);
     }
-  }, [router, supabase]);
+  }, [supabase]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/20 bg-white/70 backdrop-blur">

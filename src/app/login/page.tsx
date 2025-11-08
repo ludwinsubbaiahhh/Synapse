@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
 import { useSupabase } from "@/components/providers/supabase-provider";
@@ -8,7 +7,6 @@ import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const { supabase, session } = useSupabase();
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
@@ -18,9 +16,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (session) {
-      router.replace("/");
+      window.location.assign("/");
     }
-  }, [router, session]);
+  }, [session]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,7 +41,7 @@ export default function LoginPage() {
           ? "Account created. Check your email for verification if required."
           : "Signed in! Redirecting...",
       );
-      router.refresh();
+      window.location.assign("/");
     }
 
     setLoading(false);
