@@ -1,21 +1,25 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-import { getClientEnv } from "@/lib/env";
-
 let browserClient: ReturnType<typeof createBrowserClient> | undefined;
+let cachedUrl: string | undefined;
+let cachedAnonKey: string | undefined;
 
-export const getSupabaseBrowserClient = () => {
-  if (browserClient) {
+export const getSupabaseBrowserClient = (
+  url: string,
+  anonKey: string,
+) => {
+  if (
+    browserClient &&
+    cachedUrl === url &&
+    cachedAnonKey === anonKey
+  ) {
     return browserClient;
   }
 
-  const { NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY } =
-    getClientEnv();
+  cachedUrl = url;
+  cachedAnonKey = anonKey;
 
-  browserClient = createBrowserClient(
-    NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  );
+  browserClient = createBrowserClient(url, anonKey);
 
   return browserClient;
 };

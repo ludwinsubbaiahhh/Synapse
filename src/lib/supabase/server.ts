@@ -3,8 +3,8 @@ import { cookies } from "next/headers";
 
 import { getClientEnv } from "@/lib/env";
 
-export const createSupabaseServerClient = () => {
-  const cookieStore = cookies();
+export const createSupabaseServerClient = async () => {
+  const cookieStore = await cookies();
   const { NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY } =
     getClientEnv();
 
